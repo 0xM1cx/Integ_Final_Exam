@@ -8,9 +8,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $rating = isset($_POST['rating']) ? filter_var($_POST['rating'], FILTER_VALIDATE_INT) : 0;
 
     if ($title && $synopsis && $author && $rating) {
-        $sql = "INSERT INTO books('title', 'synopsis', 'rating', 'author') VALUES (?, ?, ?, ?);";
+        $sql = "INSERT INTO books(title, synopsis, rating, author) VALUES (?, ?, ?, ?);";
         $sql_prep = $conn->prepare($sql);
         $sql_prep->bind_param("ssis", $title, $synopsis, $rating, $author);
         $sql_prep->execute();
+        header("Location: ../index.php?added=1");
     }
 }

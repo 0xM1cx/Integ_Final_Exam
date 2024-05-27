@@ -65,7 +65,7 @@ h6 {
   bottom: 0;
   width: 300px;
   transition: all ease-in-out 0.5s;
-  z-index: 9997;
+  z-index: 1;
   transition: all 0.5s;
   padding: 0 15px;
   background: #040b14;
@@ -559,4 +559,13 @@ section {
     width: auto;
     padding-right: 20px 15px;
   }
+}
+
+/* design han alert modal */
+.alert {
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 0;
+            z-index: 9999; 
 }

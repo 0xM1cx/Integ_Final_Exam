@@ -86,19 +86,94 @@
             </thead>
             <tbody>
                 <?php
-
+                require "./model/database.php";
+                $sql = "SELECT * FROM books";
+                $res = mysqli_query($conn, $sql);
+                while ($row = mysqli_fetch_assoc($res)) {
                 ?>
-                <tr>
-                    <td>
-                        <p class="fw-normal mb-1">Software engineer</p>
-                    </td>
-                    <td>Senior</td>
-                    <td>
-                        <button type="button" class="btn btn-link btn-sm btn-rounded">
-                            Edit
-                        </button>
-                    </td>
-                </tr>
+                    <tr>
+                        <td>
+                            <p class="fw-normal mb-1"><?php echo $row['title']; ?></p>
+                        </td>
+                        <td>
+                            <p class="fw-normal mb-1">
+                                <?php
+                                $synopsis = htmlspecialchars($row['synopsis'], ENT_QUOTES, 'UTF-8');
+                                if (strlen($synopsis) > 100) {
+                                    $synopsis = substr($synopsis, 0, 100) . "...";
+                                    echo $synopsis;
+                                    echo '<a href="#" class="read-more"> Read More</a>';
+                                } else {
+                                    echo $synopsis;
+                                }
+                                ?>
+                            </p>
+                        </td>
+                        <td>
+                            <p class="fw-normal mb-1"><?php echo $row['author']; ?></p>
+                        </td>
+                        <td>
+                            <?php
+                            $rating = (int)$row['rating'];
+                            for ($i = 1; $i <= 5; $i++) {
+                                if ($i <= $rating) {
+                                    echo '<span class="text-warning">&#9733;</span>';
+                                } else {
+                                    echo '<span class="text-muted">&#9733;</span>';
+                                }
+                            }
+                            ?>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-link btn-sm btn-rounded edit-btn" data-bs-toggle="modal" data-bs-target="#editModal<?php echo $row['book_id']; ?>">
+                                Edit
+                            </button>
+                        </td>
+                    </tr>
+                    <div class="modal fade" id="editModal<?php echo $row['book_id']; ?>" tabindex="-1" aria-labelledby="editModalLabel<?php echo $row['book_id']; ?>" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="editModalLabel<?php echo $row['book_id']; ?>">Edit Book</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form action="./view/update.php" method="POST">
+                                        <div class="form-group">
+                                            <label for="edit-title">Book Title</label>
+                                            <input name="edit-title" type="text" class="form-control" id="edit-title" placeholder="Enter title" value="<?php echo htmlspecialchars($row['title'], ENT_QUOTES, 'UTF-8'); ?>">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="edit-synopsis">Book Synopsis</label>
+                                            <textarea name="edit-synopsis" class="form-control" id="edit-synopsis" rows="4" placeholder="Enter book synopsis here"><?php echo htmlspecialchars($row['synopsis'], ENT_QUOTES, 'UTF-8'); ?></textarea>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="edit-author">Author</label>
+                                            <input name="edit-author" type="text" class="form-control" id="edit-author" placeholder="Enter author" value="<?php echo htmlspecialchars($row['author'], ENT_QUOTES, 'UTF-8'); ?>">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Rating</label>
+                                            <div class="rating">
+                                                <?php
+                                                $rating = (int)$row['rating'];
+                                                for ($i = 1; $i <= 5; $i++) {
+                                                    $checked = ($i == $rating) ? 'checked' : '';
+                                                    echo '<input type="radio" name="edit-rating" id="edit-star' . $i . '" value="' . $i . '" ' . $checked . '><label for="edit-star' . $i . '" title="' . $i . ' stars">&#9733;</label>';
+                                                }
+                                                ?>
+                                            </div>
+                                        </div>
+                                        <input type="hidden" name="book_id" value="<?php echo $row['book_id']; ?>">
+                                        <div class="modal-footer">
+                                            <a href="./view/delete.php?book_id=<?php echo $row['book_id']; ?>" class="btn btn-danger">Delete</a>
+                                            <button type="submit" class="btn btn-primary">Save changes</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <?php } ?>
             </tbody>
         </table>
     </div>
